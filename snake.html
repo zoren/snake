@@ -60,7 +60,13 @@
         const dim = gridDims[i]
         return n < 0 ? dim - 1 : n % dim
       })
-      //todo: check if snake is eating itself
+      {
+        const [nshx, nshy] = newSnakeHead
+        if (snakePositions.some(([x, y]) => x === nshx && y === nshy)) {
+          alert('Ouroboros! Snake bit itself! Game over!')
+          return
+        }
+      }
 
       // make old head into body
       fillCell(...currentSnakeHead, snakeBodyColor)
