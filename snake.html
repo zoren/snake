@@ -17,12 +17,12 @@
     const snakeBodyColor = 'white'
     ctx.fillStyle = backgroundColor
     ctx.fillRect(0, 0, canvas.width, canvas.height)
-    ctx.fillStyle = 'red'
-    const fillCell = (x, y) => {
+    const fillCell = (x, y, fillStyle) => {
+      ctx.fillStyle = fillStyle
       ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight)
     }
-    let current = gridDims.map(x => Math.floor(x / 2))
-    fillCell(...current)
+    let currentSnakeHead = gridDims.map(x => Math.floor(x / 2))
+    fillCell(...currentSnakeHead, snakeHeadColor)
     const keyToDir = key => {
       switch (key) {
         case 'ArrowRight':
@@ -44,19 +44,34 @@
       [0, 1]
     ]
     let dir = 0 // 0 = right, 1 = up, 2 = left, 3 = down
+    const snakePositions = [currentSnakeHead]
+    const maxSnakeLength = 10
     document.addEventListener('keydown', function (event) {
       const { key } = event
       const newDir = keyToDir(key)
-      if (newDir !== null) {
-        console.log('newDir', newDir)
-        dir = newDir
-        const coordDiff = directions[newDir]
-        const newCurrent = current.map((x, i) => x + coordDiff[i])
-        ctx.fillStyle = snakeBodyColor
-        fillCell(...current)
-        current = newCurrent
-        ctx.fillStyle = snakeHeadColor
-        fillCell(...current)
+      if (newDir === null) return
+      // cannot go backwards
+      if (Math.abs(newDir - dir) === 2) return
+
+      const coordDiff = directions[newDir]
+
+      const newSnakeHead = currentSnakeHead.map((x, i) => {
+        const n = x + coordDiff[i]
+        const dim = gridDims[i]
+        return n < 0 ? dim - 1 : n % dim
+      })
+      //todo: check if snake is eating itself
+
+      // make old head into body
+      fillCell(...currentSnakeHead, snakeBodyColor)
+      dir = newDir
+      currentSnakeHead = newSnakeHead
+      snakePositions.push(currentSnakeHead)
+      // make new head
+      fillCell(...newSnakeHead, snakeHeadColor)
+      if (snakePositions.length > maxSnakeLength) {
+        const tailPos = snakePositions.shift()
+        fillCell(...tailPos, backgroundColor)
       }
     })
   </script>
