@@ -3,6 +3,7 @@
     console.log('snake.js')
     const cellWidth = 10
     const cellHeight = 10
+    const cellDims = [cellWidth, cellHeight]
     const gridWidth = 60
     const gridHeight = 40
     const gridDims = [gridWidth, gridHeight]
@@ -11,14 +12,17 @@
     canvas.width = cellWidth * gridWidth
     canvas.height = cellHeight * gridHeight
     const ctx = canvas.getContext('2d')
-    ctx.fillStyle = 'black'
+    const backgroundColor = 'black'
+    const snakeHeadColor = 'red'
+    const snakeBodyColor = 'white'
+    ctx.fillStyle = backgroundColor
     ctx.fillRect(0, 0, canvas.width, canvas.height)
-    const drawCell = (x, y) => {
-      ctx.fillStyle = 'white'
+    ctx.fillStyle = 'red'
+    const fillCell = (x, y) => {
       ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight)
     }
     let current = gridDims.map(x => Math.floor(x / 2))
-    drawCell(...current)
+    fillCell(...current)
     const keyToDir = key => {
       switch (key) {
         case 'ArrowRight':
@@ -48,8 +52,11 @@
         dir = newDir
         const coordDiff = directions[newDir]
         const newCurrent = current.map((x, i) => x + coordDiff[i])
+        ctx.fillStyle = snakeBodyColor
+        fillCell(...current)
         current = newCurrent
-        drawCell(...current)
+        ctx.fillStyle = snakeHeadColor
+        fillCell(...current)
       }
     })
   </script>
