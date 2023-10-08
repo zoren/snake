@@ -1,0 +1,56 @@
+<body>
+  <script>
+    console.log('snake.js')
+    const cellWidth = 10
+    const cellHeight = 10
+    const gridWidth = 60
+    const gridHeight = 40
+    const gridDims = [gridWidth, gridHeight]
+    const canvas = document.createElement('canvas')
+    document.body.append(canvas)
+    canvas.width = cellWidth * gridWidth
+    canvas.height = cellHeight * gridHeight
+    const ctx = canvas.getContext('2d')
+    ctx.fillStyle = 'black'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    const drawCell = (x, y) => {
+      ctx.fillStyle = 'white'
+      ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight)
+    }
+    let current = gridDims.map(x => Math.floor(x / 2))
+    drawCell(...current)
+    const keyToDir = key => {
+      switch (key) {
+        case 'ArrowRight':
+          return 0
+        case 'ArrowUp':
+          return 1
+        case 'ArrowLeft':
+          return 2
+        case 'ArrowDown':
+          return 3
+        default:
+          return null
+      }
+    }
+    const directions = [
+      [1, 0],
+      [0, -1],
+      [-1, 0],
+      [0, 1]
+    ]
+    let dir = 0 // 0 = right, 1 = up, 2 = left, 3 = down
+    document.addEventListener('keydown', function (event) {
+      const { key } = event
+      const newDir = keyToDir(key)
+      if (newDir !== null) {
+        console.log('newDir', newDir)
+        dir = newDir
+        const coordDiff = directions[newDir]
+        const newCurrent = current.map((x, i) => x + coordDiff[i])
+        current = newCurrent
+        drawCell(...current)
+      }
+    })
+  </script>
+</body>
