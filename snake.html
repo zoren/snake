@@ -57,14 +57,8 @@
       fillCell(currentSnakeHead, snakeHeadColor)
     }
     resetGame()
-    document.addEventListener('keydown', function (event) {
-      const { key } = event
-      const newDir = keyToDir(key)
-      if (newDir === null) return
-      // cannot go backwards
-      if (Math.abs(newDir - dir) === 2) return
-
-      const coordDiff = directions[newDir]
+    const step = () => {
+      const coordDiff = directions[dir]
 
       const newSnakeHead = currentSnakeHead.map((x, i) => {
         const n = x + coordDiff[i]
@@ -88,9 +82,17 @@
         const tailPos = snakePositions.shift()
         fillCell(tailPos, backgroundColor)
       }
-      dir = newDir
       currentSnakeHead = newSnakeHead
       snakePositions.push(currentSnakeHead)
+    }
+    document.addEventListener('keydown', function (event) {
+      const { key } = event
+      const newDir = keyToDir(key)
+      if (newDir === null) return
+      // cannot go backwards
+      if (Math.abs(newDir - dir) === 2) return
+      dir = newDir
     })
+    setInterval(step, 100)
   </script>
 </body>
