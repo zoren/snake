@@ -1,28 +1,5 @@
 <body>
   <script>
-    console.log('snake.js')
-    const cellWidth = 10
-    const cellHeight = 10
-    const cellDims = [cellWidth, cellHeight]
-    const gridWidth = 60
-    const gridHeight = 40
-    const gridDims = [gridWidth, gridHeight]
-    const canvas = document.createElement('canvas')
-    document.body.append(canvas)
-    canvas.width = cellWidth * gridWidth
-    canvas.height = cellHeight * gridHeight
-    const ctx = canvas.getContext('2d')
-    const backgroundColor = 'black'
-    const snakeHeadColor = 'red'
-    const snakeBodyColor = 'white'
-    ctx.fillStyle = backgroundColor
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    const fillCell = (x, y, fillStyle) => {
-      ctx.fillStyle = fillStyle
-      ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight)
-    }
-    let currentSnakeHead = gridDims.map(x => Math.floor(x / 2))
-    fillCell(...currentSnakeHead, snakeHeadColor)
     const keyToDir = key => {
       switch (key) {
         case 'ArrowRight':
@@ -43,9 +20,43 @@
       [-1, 0],
       [0, 1]
     ]
-    let dir = 0 // 0 = right, 1 = up, 2 = left, 3 = down
-    const snakePositions = [currentSnakeHead]
+
+    const cellWidth = 10
+    const cellHeight = 10
+    const cellDims = [cellWidth, cellHeight]
+    const gridWidth = 60
+    const gridHeight = 40
+    const gridDims = [gridWidth, gridHeight]
+
+    const backgroundColor = 'black'
+    const snakeHeadColor = 'red'
+    const snakeBodyColor = 'white'
     const maxSnakeLength = 10
+
+    const canvas = document.createElement('canvas')
+    document.body.append(canvas)
+    canvas.width = cellWidth * gridWidth
+    canvas.height = cellHeight * gridHeight
+    const ctx = canvas.getContext('2d')
+
+    const fillCell = (x, y, fillStyle) => {
+      ctx.fillStyle = fillStyle
+      ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight)
+    }
+    const initSnakeHead = gridDims.map(x => Math.floor(x / 2))
+    let currentSnakeHead
+    let dir // 0 = right, 1 = up, 2 = left, 3 = down
+    const snakePositions = []
+    const resetGame = () => {
+      dir = 0
+      snakePositions.length = 0
+      snakePositions.push(initSnakeHead)
+      currentSnakeHead = initSnakeHead
+      ctx.fillStyle = backgroundColor
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      fillCell(...currentSnakeHead, snakeHeadColor)
+    }
+    resetGame()
     document.addEventListener('keydown', function (event) {
       const { key } = event
       const newDir = keyToDir(key)
@@ -64,21 +75,22 @@
         const [nshx, nshy] = newSnakeHead
         if (snakePositions.some(([x, y]) => x === nshx && y === nshy)) {
           alert('Ouroboros! Snake bit itself! Game over!')
+          resetGame()
           return
         }
       }
 
       // make old head into body
       fillCell(...currentSnakeHead, snakeBodyColor)
-      dir = newDir
-      currentSnakeHead = newSnakeHead
-      snakePositions.push(currentSnakeHead)
       // make new head
       fillCell(...newSnakeHead, snakeHeadColor)
       if (snakePositions.length > maxSnakeLength) {
         const tailPos = snakePositions.shift()
         fillCell(...tailPos, backgroundColor)
       }
+      dir = newDir
+      currentSnakeHead = newSnakeHead
+      snakePositions.push(currentSnakeHead)
     })
   </script>
 </body>
