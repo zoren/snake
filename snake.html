@@ -39,7 +39,7 @@
     canvas.height = cellHeight * gridHeight
     const ctx = canvas.getContext('2d')
 
-    const fillCell = (x, y, fillStyle) => {
+    const fillCell = ([x, y], fillStyle) => {
       ctx.fillStyle = fillStyle
       ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight)
     }
@@ -54,7 +54,7 @@
       currentSnakeHead = initSnakeHead
       ctx.fillStyle = backgroundColor
       ctx.fillRect(0, 0, canvas.width, canvas.height)
-      fillCell(...currentSnakeHead, snakeHeadColor)
+      fillCell(currentSnakeHead, snakeHeadColor)
     }
     resetGame()
     document.addEventListener('keydown', function (event) {
@@ -81,12 +81,12 @@
       }
 
       // make old head into body
-      fillCell(...currentSnakeHead, snakeBodyColor)
+      fillCell(currentSnakeHead, snakeBodyColor)
       // make new head
-      fillCell(...newSnakeHead, snakeHeadColor)
+      fillCell(newSnakeHead, snakeHeadColor)
       if (snakePositions.length > maxSnakeLength) {
         const tailPos = snakePositions.shift()
-        fillCell(...tailPos, backgroundColor)
+        fillCell(tailPos, backgroundColor)
       }
       dir = newDir
       currentSnakeHead = newSnakeHead
