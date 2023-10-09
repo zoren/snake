@@ -44,22 +44,20 @@
       ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight)
     }
     const initSnakeHead = gridDims.map(x => Math.floor(x / 2))
-    let currentSnakeHead
     let dir // 0 = right, 1 = up, 2 = left, 3 = down
     const snakePositions = []
     const resetGame = () => {
       dir = 0
       snakePositions.length = 0
       snakePositions.push(initSnakeHead)
-      currentSnakeHead = initSnakeHead
       ctx.fillStyle = backgroundColor
       ctx.fillRect(0, 0, canvas.width, canvas.height)
-      fillCell(currentSnakeHead, snakeHeadColor)
+      fillCell(initSnakeHead, snakeHeadColor)
     }
     resetGame()
     const step = () => {
       const coordDiff = directions[dir]
-
+      const currentSnakeHead = snakePositions.at(-1)
       const newSnakeHead = currentSnakeHead.map((x, i) => {
         const n = x + coordDiff[i]
         const dim = gridDims[i]
@@ -82,13 +80,13 @@
         const tailPos = snakePositions.shift()
         fillCell(tailPos, backgroundColor)
       }
-      currentSnakeHead = newSnakeHead
-      snakePositions.push(currentSnakeHead)
+      snakePositions.push(newSnakeHead)
     }
     document.addEventListener('keydown', function (event) {
       const { key } = event
       const newDir = keyToDir(key)
       if (newDir === null) return
+      if (newDir === dir) return
       // cannot go backwards
       if (Math.abs(newDir - dir) === 2) return
       dir = newDir
