@@ -48,6 +48,7 @@
       ctx.fillRect(...cellToPixel(coords), ...cellToPixel([1, 1]))
     }
     let headDirection // 0 = right, 1 = up, 2 = left, 3 = down
+    let prevHeadDirection
     const snakePositions = []
     const snakeMouthCtx = canvas.getContext('2d')
     snakeMouthCtx.strokeStyle = snakeMouthStrokeStyle
@@ -79,7 +80,8 @@
     resetGame()
 
     const step = () => {
-      const coordDiff = directions[headDirection]
+      prevHeadDirection = headDirection
+      const coordDiff = directions[prevHeadDirection]
       const currentSnakeHead = snakePositions.at(-1)
       const newSnakeHead = currentSnakeHead.map((x, i) => {
         const n = x + coordDiff[i]
@@ -111,7 +113,7 @@
       if (newDir === null) return
       if (newDir === headDirection) return
       // cannot go backwards
-      if (Math.abs(newDir - headDirection) === 2) return
+      if (Math.abs(newDir - prevHeadDirection) === 2) return
       headDirection = newDir
       drawHead()
     })
