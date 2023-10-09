@@ -30,11 +30,13 @@
 
     const backgroundColor = 'black'
     const snakeHeadColor = 'green'
+    const snakeMouthStrokeStyle = 'red'
     const snakeBodyColor = 'darkgreen'
     const maxSnakeLength = 10
     const cellToPixel = coors => coors.map((x, i) => x * cellDims[i])
     const canvasDims = cellToPixel(gridDims)
     const initSnakeHead = gridDims.map(x => Math.floor(x / 2))
+    const initialHeadDir = 0
 
     const canvas = document.createElement('canvas')
     document.body.append(canvas)
@@ -45,10 +47,10 @@
       ctx.fillStyle = fillStyle
       ctx.fillRect(...cellToPixel(coords), ...cellToPixel([1, 1]))
     }
-    let dir // 0 = right, 1 = up, 2 = left, 3 = down
+    let headDirection // 0 = right, 1 = up, 2 = left, 3 = down
     const snakePositions = []
     const snakeMouthCtx = canvas.getContext('2d')
-    snakeMouthCtx.strokeStyle = 'red'
+    snakeMouthCtx.strokeStyle = snakeMouthStrokeStyle
     const centerPxDelta = cellDims.map(x => x / 2)
 
     const drawHead = () => {
@@ -59,7 +61,7 @@
 
       snakeMouthCtx.beginPath()
       snakeMouthCtx.moveTo(...centerPxCoords)
-      const coordDiff = directions[dir]
+      const coordDiff = directions[headDirection]
       const mouthCoords = centerPxDelta.map(
         (cpxd, i) => cpxd * coordDiff[i] + centerPxCoords[i]
       )
@@ -67,7 +69,7 @@
       snakeMouthCtx.stroke()
     }
     const resetGame = () => {
-      dir = 0
+      headDirection = initialHeadDir
       snakePositions.length = 0
       snakePositions.push(initSnakeHead)
       ctx.fillStyle = backgroundColor
@@ -77,7 +79,7 @@
     resetGame()
 
     const step = () => {
-      const coordDiff = directions[dir]
+      const coordDiff = directions[headDirection]
       const currentSnakeHead = snakePositions.at(-1)
       const newSnakeHead = currentSnakeHead.map((x, i) => {
         const n = x + coordDiff[i]
@@ -107,10 +109,10 @@
       const { key } = event
       const newDir = keyToDir(key)
       if (newDir === null) return
-      if (newDir === dir) return
+      if (newDir === headDirection) return
       // cannot go backwards
-      if (Math.abs(newDir - dir) === 2) return
-      dir = newDir
+      if (Math.abs(newDir - headDirection) === 2) return
+      headDirection = newDir
       drawHead()
     })
     setInterval(step, 500)
