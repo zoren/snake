@@ -29,8 +29,8 @@
     const gridDims = [gridWidth, gridHeight]
 
     const backgroundColor = 'black'
-    const snakeHeadColor = 'red'
-    const snakeBodyColor = 'white'
+    const snakeHeadColor = 'green'
+    const snakeBodyColor = 'darkgreen'
     const maxSnakeLength = 10
     const cellToPixel = coors => coors.map((x, i) => x * cellDims[i])
     const canvasDims = cellToPixel(gridDims)
@@ -47,15 +47,35 @@
     }
     let dir // 0 = right, 1 = up, 2 = left, 3 = down
     const snakePositions = []
+    const snakeMouthCtx = canvas.getContext('2d')
+    snakeMouthCtx.strokeStyle = 'red'
+    const centerPxDelta = cellDims.map(x => x / 2)
+
+    const drawHead = () => {
+      const headCellCoords = snakePositions.at(-1)
+      const cellPxCoords = cellToPixel(headCellCoords)
+      const centerPxCoords = cellPxCoords.map((x, i) => x + centerPxDelta[i])
+      fillCell(headCellCoords, snakeHeadColor)
+
+      snakeMouthCtx.beginPath()
+      snakeMouthCtx.moveTo(...centerPxCoords)
+      const coordDiff = directions[dir]
+      const mouthCoords = centerPxDelta.map(
+        (cpxd, i) => cpxd * coordDiff[i] + centerPxCoords[i]
+      )
+      snakeMouthCtx.lineTo(...mouthCoords)
+      snakeMouthCtx.stroke()
+    }
     const resetGame = () => {
       dir = 0
       snakePositions.length = 0
       snakePositions.push(initSnakeHead)
       ctx.fillStyle = backgroundColor
       ctx.fillRect(0, 0, ...canvasDims)
-      fillCell(initSnakeHead, snakeHeadColor)
+      drawHead()
     }
     resetGame()
+
     const step = () => {
       const coordDiff = directions[dir]
       const currentSnakeHead = snakePositions.at(-1)
@@ -75,13 +95,13 @@
 
       // make old head into body
       fillCell(currentSnakeHead, snakeBodyColor)
-      // make new head
-      fillCell(newSnakeHead, snakeHeadColor)
       if (snakePositions.length > maxSnakeLength) {
         const tailPos = snakePositions.shift()
         fillCell(tailPos, backgroundColor)
       }
       snakePositions.push(newSnakeHead)
+      // make new head
+      drawHead()
     }
     document.addEventListener('keydown', function (event) {
       const { key } = event
@@ -91,7 +111,8 @@
       // cannot go backwards
       if (Math.abs(newDir - dir) === 2) return
       dir = newDir
+      drawHead()
     })
-    setInterval(step, 100)
+    setInterval(step, 500)
   </script>
 </body>
