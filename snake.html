@@ -32,18 +32,19 @@
     const snakeHeadColor = 'red'
     const snakeBodyColor = 'white'
     const maxSnakeLength = 10
+    const cellToPixel = coors => coors.map((x, i) => x * cellDims[i])
+    const canvasDims = cellToPixel(gridDims)
+    const initSnakeHead = gridDims.map(x => Math.floor(x / 2))
 
     const canvas = document.createElement('canvas')
     document.body.append(canvas)
-    canvas.width = cellWidth * gridWidth
-    canvas.height = cellHeight * gridHeight
+    canvas.width = canvasDims[0]
+    canvas.height = canvasDims[1]
     const ctx = canvas.getContext('2d')
-
-    const fillCell = ([x, y], fillStyle) => {
+    const fillCell = (coords, fillStyle) => {
       ctx.fillStyle = fillStyle
-      ctx.fillRect(x * cellWidth, y * cellHeight, cellWidth, cellHeight)
+      ctx.fillRect(...cellToPixel(coords), ...cellToPixel([1, 1]))
     }
-    const initSnakeHead = gridDims.map(x => Math.floor(x / 2))
     let dir // 0 = right, 1 = up, 2 = left, 3 = down
     const snakePositions = []
     const resetGame = () => {
@@ -51,7 +52,7 @@
       snakePositions.length = 0
       snakePositions.push(initSnakeHead)
       ctx.fillStyle = backgroundColor
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.fillRect(0, 0, ...canvasDims)
       fillCell(initSnakeHead, snakeHeadColor)
     }
     resetGame()
